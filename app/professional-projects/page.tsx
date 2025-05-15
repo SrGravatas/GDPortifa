@@ -30,7 +30,13 @@ export default function ProfessionalProjects() {
             onClick={() => openProject(project)}
           >
             <div className="aspect-video relative">
-              <Image src={project.thumbnail || "/placeholder.svg"} alt={project.title} fill className="object-cover" />
+              <Image
+                src={project.thumbnail || "/placeholder.svg"}
+                alt={project.title}
+                fill
+                className="object-cover"
+                unoptimized
+              />
             </div>
             <CardContent className="p-4">
               <h3 className="text-xl font-semibold">{project.title}</h3>

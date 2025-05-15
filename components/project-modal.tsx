@@ -175,7 +175,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                 allowFullScreen
               ></iframe>
               {currentMedia?.title && (
-                <div className="absolute bottom-0 left-0 right-0 bg-background/80 p-2">
+                <div className="absolute bottom-0 left-0 right-0 bg-background/80 p-2 z-10 pointer-events-none">
                   <p className="text-sm font-medium">{currentMedia.title}</p>
                 </div>
               )}
@@ -192,7 +192,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                 Seu navegador não suporta a tag de vídeo.
               </video>
               {currentMedia?.title && (
-                <div className="absolute bottom-0 left-0 right-0 bg-background/80 p-2">
+                <div className="absolute bottom-0 left-0 right-0 bg-background/80 p-2 z-10 pointer-events-none">
                   <p className="text-sm font-medium">{currentMedia.title}</p>
                 </div>
               )}

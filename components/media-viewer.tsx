@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import Image from "next/image"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { X, ChevronLeft, ChevronRight } from "lucide-react"
@@ -58,8 +58,8 @@ export default function MediaViewer({
   }
 
   // Handle keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
       if (!isOpen) return
 
       if (e.key === "ArrowRight") {
@@ -69,11 +69,14 @@ export default function MediaViewer({
       } else if (e.key === "Escape") {
         onClose()
       }
-    }
+    },
+    [isOpen, onClose, currentIndex, goToNext, goToPrev],
+  )
 
+  useEffect(() => {
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [isOpen, onClose, currentIndex, goToNext, goToPrev])
+  }, [handleKeyDown])
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -93,7 +96,13 @@ export default function MediaViewer({
           {/* Media content */}
           <div className="flex-1 relative flex items-center justify-center p-4 min-h-[300px]">
             {isVideo ? (
-              <video src={currentMedia.url} controls className="max-h-[70vh] max-w-full object-contain" autoPlay>
+              <video
+                src={currentMedia.url}
+                controls
+                className="max-h-[70vh] max-w-full object-contain"
+                autoPlay
+                aria-label={currentMedia.title || `Media ${currentIndex + 1} of ${media.length}`}
+              >
                 Your browser does not support the video tag.
               </video>
             ) : (
