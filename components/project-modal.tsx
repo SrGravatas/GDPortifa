@@ -86,13 +86,13 @@ export default function ProjectModal({ project, isOpen, onClose }) {
 
   const goToNextMedia = useCallback(() => {
     if (currentMediaIndex < allMedia.length - 1) {
-      setCurrentMediaIndex(currentMediaIndex + 1)
+      setCurrentMediaIndex((prev) => prev + 1)
     }
   }, [currentMediaIndex, allMedia.length])
 
   const goToPrevMedia = useCallback(() => {
     if (currentMediaIndex > 0) {
-      setCurrentMediaIndex(currentMediaIndex - 1)
+      setCurrentMediaIndex((prev) => prev - 1)
     }
   }, [currentMediaIndex])
 
@@ -134,6 +134,11 @@ export default function ProjectModal({ project, isOpen, onClose }) {
       : shortsMatch && shortsMatch[2].length === 11
         ? shortsMatch[2]
         : null
+  }, [])
+
+  const handleThumbnailClick = useCallback((index) => {
+    console.log("Thumbnail clicked:", index)
+    setCurrentMediaIndex(index)
   }, [])
 
   const renderMediaGallery = () => {
@@ -262,15 +267,15 @@ export default function ProjectModal({ project, isOpen, onClose }) {
         {/* Thumbnails */}
         <div className="flex gap-2 overflow-x-auto pb-2 snap-x">
           {allMedia.map((media, index) => (
-            <div
+            <button
               id={`media-thumb-${index}`}
               key={index}
               className={`flex-shrink-0 w-24 h-16 relative bg-muted rounded-md overflow-hidden cursor-pointer border-2 snap-center ${
                 currentMediaIndex === index ? "border-primary" : "border-transparent"
               } hover:opacity-90 transition-opacity`}
-              onClick={() => {
-                setCurrentMediaIndex(index)
-              }}
+              onClick={() => handleThumbnailClick(index)}
+              type="button"
+              aria-label={`View media ${index + 1}`}
             >
               {media.type === "youtube" ? (
                 // YouTube thumbnail
@@ -303,7 +308,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                   />
                 </div>
               )}
-            </div>
+            </button>
           ))}
         </div>
       </div>
