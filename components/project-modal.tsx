@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Image from "next/image"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import {
@@ -84,38 +84,41 @@ export default function ProjectModal({ project, isOpen, onClose }) {
     }
   }, [currentMediaIndex])
 
-  const goToNextMedia = () => {
+  const goToNextMedia = useCallback(() => {
     if (currentMediaIndex < allMedia.length - 1) {
       setCurrentMediaIndex(currentMediaIndex + 1)
     }
-  }
+  }, [currentMediaIndex, allMedia.length])
 
-  const goToPrevMedia = () => {
+  const goToPrevMedia = useCallback(() => {
     if (currentMediaIndex > 0) {
       setCurrentMediaIndex(currentMediaIndex - 1)
     }
-  }
+  }, [currentMediaIndex])
 
-  const openMediaViewer = (index) => {
-    // Calcular o índice correto para o visualizador de mídia, excluindo vídeos do YouTube
-    let viewerIndex = 0
-    let localMediaCount = 0
+  const openMediaViewer = useCallback(
+    (index) => {
+      // Calcular o índice correto para o visualizador de mídia, excluindo vídeos do YouTube
+      let viewerIndex = 0
+      let localMediaCount = 0
 
-    for (let i = 0; i < allMedia.length; i++) {
-      if (allMedia[i].type !== "youtube") {
-        if (i === index) {
-          viewerIndex = localMediaCount
+      for (let i = 0; i < allMedia.length; i++) {
+        if (allMedia[i].type !== "youtube") {
+          if (i === index) {
+            viewerIndex = localMediaCount
+          }
+          localMediaCount++
         }
-        localMediaCount++
       }
-    }
 
-    setMediaViewerIndex(viewerIndex)
-    setIsMediaViewerOpen(true)
-  }
+      setMediaViewerIndex(viewerIndex)
+      setIsMediaViewerOpen(true)
+    },
+    [allMedia],
+  )
 
   // Função para extrair o ID do vídeo do YouTube a partir da URL
-  const getYoutubeVideoId = (url) => {
+  const getYoutubeVideoId = useCallback((url) => {
     if (!url) return null
 
     // Padrão para URLs completas do YouTube
@@ -131,7 +134,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
       : shortsMatch && shortsMatch[2].length === 11
         ? shortsMatch[2]
         : null
-  }
+  }, [])
 
   const renderMediaGallery = () => {
     if (!project) return null
@@ -215,10 +218,11 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                   alt={currentMedia?.title || "Project image"}
                   fill
                   className="object-contain"
+                  unoptimized
                 />
               </div>
               {currentMedia?.title && (
-                <div className="absolute bottom-0 left-0 right-0 bg-background/80 p-2">
+                <div className="absolute bottom-0 left-0 right-0 bg-background/80 p-2 pointer-events-none">
                   <p className="text-sm font-medium">{currentMedia.title}</p>
                 </div>
               )}
@@ -276,6 +280,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                     alt={media.title || "YouTube Thumbnail"}
                     fill
                     className="object-cover"
+                    unoptimized
                   />
                   <div className="absolute inset-0 flex items-center justify-center bg-black/30">
                     <Youtube className="h-6 w-6 text-white" />
@@ -294,6 +299,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                     alt={media.title || "Thumbnail"}
                     fill
                     className="object-cover"
+                    unoptimized
                   />
                 </div>
               )}

@@ -31,11 +31,12 @@ export default function ProfessionalProjects() {
           >
             <div className="aspect-video relative">
               <Image
-                src={project.thumbnail || "/placeholder.svg"}
+                src={project.thumbnail || "/placeholder.svg?height=300&width=500"}
                 alt={project.title}
                 fill
                 className="object-cover"
                 unoptimized
+                priority
               />
             </div>
             <CardContent className="p-4">

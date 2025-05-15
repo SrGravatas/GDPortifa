@@ -58,10 +58,10 @@ export default function MediaViewer({
   }
 
   // Handle keyboard navigation
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (!isOpen) return
+  useEffect(() => {
+    if (!isOpen) return
 
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowRight") {
         goToNext()
       } else if (e.key === "ArrowLeft") {
@@ -69,14 +69,23 @@ export default function MediaViewer({
       } else if (e.key === "Escape") {
         onClose()
       }
-    },
-    [isOpen, onClose, currentIndex, goToNext, goToPrev],
-  )
+    }
 
-  useEffect(() => {
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [handleKeyDown])
+  }, [isOpen, onClose, currentIndex, goToNext, goToPrev])
+
+  const goToNextCallback = useCallback(() => {
+    if (currentIndex < media.length - 1) {
+      setCurrentIndex(currentIndex + 1)
+    }
+  }, [currentIndex, media.length])
+
+  const goToPrevCallback = useCallback(() => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1)
+    }
+  }, [currentIndex])
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -113,6 +122,7 @@ export default function MediaViewer({
                   width={1200}
                   height={800}
                   className="max-h-[70vh] max-w-full object-contain"
+                  unoptimized
                 />
               </div>
             )}
@@ -120,7 +130,7 @@ export default function MediaViewer({
 
           {/* Navigation controls */}
           <div className="flex justify-between items-center p-4 border-t">
-            <Button variant="outline" size="icon" onClick={goToPrev} disabled={currentIndex === 0}>
+            <Button variant="outline" size="icon" onClick={goToPrevCallback} disabled={currentIndex === 0}>
               <ChevronLeft className="h-5 w-5" />
               <span className="sr-only">Previous</span>
             </Button>
@@ -129,7 +139,12 @@ export default function MediaViewer({
               {currentIndex + 1} of {media.length}
             </div>
 
-            <Button variant="outline" size="icon" onClick={goToNext} disabled={currentIndex === media.length - 1}>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={goToNextCallback}
+              disabled={currentIndex === media.length - 1}
+            >
               <ChevronRight className="h-5 w-5" />
               <span className="sr-only">Next</span>
             </Button>
