@@ -31,10 +31,12 @@ export default function ProjectModal({ project, isOpen, onClose }) {
     setIsMobile(isSmallScreen)
   }, [isSmallScreen])
 
-  // Reset state when project changes
+  // Reset state when project changes or modal opens
   useEffect(() => {
-    setCurrentMediaIndex(0)
-  }, [project])
+    if (isOpen) {
+      setCurrentMediaIndex(0)
+    }
+  }, [project, isOpen])
 
   // Update allMedia and viewerMedia when project changes
   useEffect(() => {
@@ -74,49 +76,6 @@ export default function ProjectModal({ project, isOpen, onClose }) {
     setViewerMedia(mediaForViewer)
   }, [project])
 
-  // Scroll to current thumbnail when currentMediaIndex changes
-  useEffect(() => {
-    // Encontre o elemento da miniatura atual
-    const currentThumb = document.getElementById(`media-thumb-${currentMediaIndex}`)
-    if (currentThumb) {
-      // Role para a miniatura atual
-      currentThumb.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" })
-    }
-  }, [currentMediaIndex])
-
-  const goToNextMedia = useCallback(() => {
-    if (currentMediaIndex < allMedia.length - 1) {
-      setCurrentMediaIndex((prev) => prev + 1)
-    }
-  }, [currentMediaIndex, allMedia.length])
-
-  const goToPrevMedia = useCallback(() => {
-    if (currentMediaIndex > 0) {
-      setCurrentMediaIndex((prev) => prev - 1)
-    }
-  }, [currentMediaIndex])
-
-  const openMediaViewer = useCallback(
-    (index) => {
-      // Calcular o índice correto para o visualizador de mídia, excluindo vídeos do YouTube
-      let viewerIndex = 0
-      let localMediaCount = 0
-
-      for (let i = 0; i < allMedia.length; i++) {
-        if (allMedia[i].type !== "youtube") {
-          if (i === index) {
-            viewerIndex = localMediaCount
-          }
-          localMediaCount++
-        }
-      }
-
-      setMediaViewerIndex(viewerIndex)
-      setIsMediaViewerOpen(true)
-    },
-    [allMedia],
-  )
-
   // Função para extrair o ID do vídeo do YouTube a partir da URL
   const getYoutubeVideoId = useCallback((url) => {
     if (!url) return null
@@ -136,11 +95,6 @@ export default function ProjectModal({ project, isOpen, onClose }) {
         : null
   }, [])
 
-  const handleThumbnailClick = useCallback((index) => {
-    console.log("Thumbnail clicked:", index)
-    setCurrentMediaIndex(index)
-  }, [])
-
   const renderMediaGallery = () => {
     if (!project) return null
 
@@ -156,7 +110,9 @@ export default function ProjectModal({ project, isOpen, onClose }) {
       )
     }
 
-    const currentMedia = allMedia[currentMediaIndex]
+    // Garantir que o índice atual está dentro dos limites do array
+    const safeIndex = Math.min(Math.max(0, currentMediaIndex), allMedia.length - 1)
+    const currentMedia = allMedia[safeIndex]
 
     if (!currentMedia) {
       return (
@@ -168,13 +124,48 @@ export default function ProjectModal({ project, isOpen, onClose }) {
       )
     }
 
+    // Função para navegar para a próxima mídia
+    const goToNext = () => {
+      if (currentMediaIndex < allMedia.length - 1) {
+        setCurrentMediaIndex(currentMediaIndex + 1)
+      }
+    }
+
+    // Função para navegar para a mídia anterior
+    const goToPrev = () => {
+      if (currentMediaIndex > 0) {
+        setCurrentMediaIndex(currentMediaIndex - 1)
+      }
+    }
+
+    // Função para abrir o visualizador de mídia
+    const openMediaViewer = (index) => {
+      // Calcular o índice correto para o visualizador de mídia, excluindo vídeos do YouTube
+      let viewerIndex = 0
+      let localMediaCount = 0
+
+      for (let i = 0; i < allMedia.length; i++) {
+        if (allMedia[i].type !== "youtube") {
+          if (i === index) {
+            viewerIndex = localMediaCount
+          }
+          localMediaCount++
+        }
+      }
+
+      setMediaViewerIndex(viewerIndex)
+      setIsMediaViewerOpen(true)
+    }
+
     return (
       <div className="space-y-4">
+        {/* Main media display */}
         <div className="aspect-video relative bg-muted rounded-md overflow-hidden group">
           {currentMedia.type === "youtube" ? (
             // YouTube player
             <div className="absolute inset-0">
               <iframe
+                key={`youtube-${currentMediaIndex}`}
                 src={`https://www.youtube.com/embed/${getYoutubeVideoId(currentMedia.youtubeUrl)}`}
                 title={currentMedia?.title || "YouTube Video"}
                 className="absolute inset-0 w-full h-full"
@@ -192,6 +183,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
             // Video player
             <div className="absolute inset-0">
               <video
+                key={`video-${currentMediaIndex}`}
                 src={currentMedia?.url}
                 controls
                 className="w-full h-full object-contain"
@@ -219,6 +211,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
             <div className="absolute inset-0">
               <div className="relative w-full h-full cursor-pointer" onClick={() => openMediaViewer(currentMediaIndex)}>
                 <CustomImage
+                  key={`image-${currentMediaIndex}`}
                   src={currentMedia?.url || "/placeholder.svg?height=300&width=500"}
                   alt={currentMedia?.title || "Project image"}
                   fill
@@ -246,7 +239,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
 
         {/* Media navigation */}
         <div className="flex justify-between items-center">
-          <Button variant="outline" size="icon" onClick={goToPrevMedia} disabled={currentMediaIndex === 0}>
+          <Button variant="outline" size="icon" onClick={goToPrev} disabled={currentMediaIndex === 0}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
 
@@ -254,12 +247,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
             {currentMediaIndex + 1} of {allMedia.length}
           </div>
 
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={goToNextMedia}
-            disabled={currentMediaIndex === allMedia.length - 1}
-          >
+          <Button variant="outline" size="icon" onClick={goToNext} disabled={currentMediaIndex === allMedia.length - 1}>
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
@@ -268,14 +256,17 @@ export default function ProjectModal({ project, isOpen, onClose }) {
         <div className="flex gap-2 overflow-x-auto pb-2 snap-x">
           {allMedia.map((media, index) => (
             <button
-              id={`media-thumb-${index}`}
-              key={index}
+              key={`thumb-${index}`}
+              type="button"
               className={`flex-shrink-0 w-24 h-16 relative bg-muted rounded-md overflow-hidden cursor-pointer border-2 snap-center ${
                 currentMediaIndex === index ? "border-primary" : "border-transparent"
               } hover:opacity-90 transition-opacity`}
-              onClick={() => handleThumbnailClick(index)}
-              type="button"
+              onClick={() => {
+                console.log("Setting current media index to:", index)
+                setCurrentMediaIndex(index)
+              }}
               aria-label={`View media ${index + 1}`}
+              aria-current={currentMediaIndex === index ? "true" : "false"}
             >
               {media.type === "youtube" ? (
                 // YouTube thumbnail
