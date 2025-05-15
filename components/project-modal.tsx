@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import Image from "next/image"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import {
   Drawer,
@@ -16,6 +15,7 @@ import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Play, X, Maximize, Youtube } from "lucide-react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import MediaViewer from "./media-viewer"
+import CustomImage from "./custom-image"
 
 export default function ProjectModal({ project, isOpen, onClose }) {
   const [isMobile, setIsMobile] = useState(false)
@@ -213,12 +213,12 @@ export default function ProjectModal({ project, isOpen, onClose }) {
             // Image display
             <div className="absolute inset-0">
               <div className="relative w-full h-full cursor-pointer" onClick={() => openMediaViewer(currentMediaIndex)}>
-                <Image
+                <CustomImage
                   src={currentMedia?.url || "/placeholder.svg?height=300&width=500"}
                   alt={currentMedia?.title || "Project image"}
                   fill
                   className="object-contain"
-                  unoptimized
+                  fallbackSrc="/placeholder.svg?height=300&width=500"
                 />
               </div>
               {currentMedia?.title && (
@@ -275,12 +275,12 @@ export default function ProjectModal({ project, isOpen, onClose }) {
               {media.type === "youtube" ? (
                 // YouTube thumbnail
                 <div className="relative w-full h-full">
-                  <Image
+                  <CustomImage
                     src={`https://img.youtube.com/vi/${getYoutubeVideoId(media.youtubeUrl)}/mqdefault.jpg`}
                     alt={media.title || "YouTube Thumbnail"}
                     fill
                     className="object-cover"
-                    unoptimized
+                    fallbackSrc="/placeholder.svg?height=64&width=96"
                   />
                   <div className="absolute inset-0 flex items-center justify-center bg-black/30">
                     <Youtube className="h-6 w-6 text-white" />
@@ -294,12 +294,12 @@ export default function ProjectModal({ project, isOpen, onClose }) {
               ) : (
                 // Image thumbnail
                 <div className="relative w-full h-full">
-                  <Image
+                  <CustomImage
                     src={media.url || "/placeholder.svg"}
                     alt={media.title || "Thumbnail"}
                     fill
                     className="object-cover"
-                    unoptimized
+                    fallbackSrc="/placeholder.svg?height=64&width=96"
                   />
                 </div>
               )}

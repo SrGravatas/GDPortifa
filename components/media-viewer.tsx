@@ -1,10 +1,10 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
-import Image from "next/image"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { X, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import CustomImage from "./custom-image"
 
 export default function MediaViewer({
   isOpen,
@@ -57,11 +57,8 @@ export default function MediaViewer({
     }
   }
 
-  // Handle keyboard navigation
-  useEffect(() => {
-    if (!isOpen) return
-
-    const handleKeyDown = (e: KeyboardEvent) => {
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
       if (e.key === "ArrowRight") {
         goToNext()
       } else if (e.key === "ArrowLeft") {
@@ -69,23 +66,17 @@ export default function MediaViewer({
       } else if (e.key === "Escape") {
         onClose()
       }
-    }
+    },
+    [goToNext, goToPrev, onClose],
+  )
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    if (!isOpen) return
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [isOpen, onClose, currentIndex, goToNext, goToPrev])
-
-  const goToNextCallback = useCallback(() => {
-    if (currentIndex < media.length - 1) {
-      setCurrentIndex(currentIndex + 1)
-    }
-  }, [currentIndex, media.length])
-
-  const goToPrevCallback = useCallback(() => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1)
-    }
-  }, [currentIndex])
+  }, [isOpen, handleKeyDown])
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -116,13 +107,13 @@ export default function MediaViewer({
               </video>
             ) : (
               <div className="relative w-full h-full max-h-[70vh] flex items-center justify-center">
-                <Image
+                <CustomImage
                   src={currentMedia.url || "/placeholder.svg"}
                   alt={currentMedia.title || "Media"}
                   width={1200}
                   height={800}
                   className="max-h-[70vh] max-w-full object-contain"
-                  unoptimized
+                  fallbackSrc="/placeholder.svg?height=600&width=800"
                 />
               </div>
             )}
@@ -130,7 +121,7 @@ export default function MediaViewer({
 
           {/* Navigation controls */}
           <div className="flex justify-between items-center p-4 border-t">
-            <Button variant="outline" size="icon" onClick={goToPrevCallback} disabled={currentIndex === 0}>
+            <Button variant="outline" size="icon" onClick={goToPrev} disabled={currentIndex === 0}>
               <ChevronLeft className="h-5 w-5" />
               <span className="sr-only">Previous</span>
             </Button>
@@ -139,12 +130,7 @@ export default function MediaViewer({
               {currentIndex + 1} of {media.length}
             </div>
 
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={goToNextCallback}
-              disabled={currentIndex === media.length - 1}
-            >
+            <Button variant="outline" size="icon" onClick={goToNext} disabled={currentIndex === media.length - 1}>
               <ChevronRight className="h-5 w-5" />
               <span className="sr-only">Next</span>
             </Button>

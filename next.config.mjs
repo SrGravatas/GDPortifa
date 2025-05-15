@@ -7,11 +7,15 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    domains: ['hebbkx1anhila5yf.public.blob.vercel-storage.com'],
+    domains: ['hebbkx1anhila5yf.public.blob.vercel-storage.com', 'img.youtube.com', 'v0.blob.com'],
     unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
   },
-  // Se o site estiver em um subdiretório do domínio, descomente e ajuste a linha abaixo
-  // basePath: '/seu-subdiretorio',
 }
 
 export default nextConfig

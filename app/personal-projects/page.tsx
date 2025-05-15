@@ -1,10 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import ProjectModal from "@/components/project-modal"
 import { projectsData } from "@/lib/projects-data"
+import CustomImage from "@/components/custom-image"
 
 export default function PersonalProjects() {
   const [selectedProject, setSelectedProject] = useState(null)
@@ -30,12 +30,12 @@ export default function PersonalProjects() {
             onClick={() => openProject(project)}
           >
             <div className="aspect-video relative">
-              <Image
+              <CustomImage
                 src={project.thumbnail || "/placeholder.svg?height=300&width=500"}
                 alt={project.title}
                 fill
                 className="object-cover"
-                unoptimized
+                fallbackSrc="/placeholder.svg?height=300&width=500"
                 priority
               />
             </div>
