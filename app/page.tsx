@@ -16,16 +16,14 @@ export default function Home() {
   return (
     <main className="relative flex flex-col items-center justify-center min-h-[calc(100vh-80px)] w-full overflow-hidden">
       {/* Video Background */}
-      <div className="absolute inset-0 w-full h-full z-0">
+      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
         {isClient && (
           <div className="relative w-full h-full">
             <iframe
               src="https://www.youtube.com/embed/7rNbeUnUluw?autoplay=1&mute=1&controls=0&loop=1&playlist=7rNbeUnUluw&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              className="absolute w-full h-full object-cover"
+              className="absolute w-[100vw] h-[56.25vw] min-h-[100%] min-w-[177.77vh]"
               style={{
-                width: "100%",
-                height: "100%",
                 position: "absolute",
                 top: "50%",
                 left: "50%",
