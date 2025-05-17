@@ -29,65 +29,78 @@ export default function Resume() {
         <section className="mb-6 md:mb-8">
           <h3 className="text-xl font-semibold border-b pb-2 mb-4">Professional Experience</h3>
 
-          <div className="mb-6">
-            <div className="flex flex-col md:flex-row justify-between mb-2">
-              <h4 className="font-medium">Arvore VR Immersive Experiences</h4>
-              <span className="text-muted-foreground text-sm md:text-base">04/2025 - Present</span>
+          {/* Arvore VR Immersive Experiences */}
+          <div className="mb-8">
+            <h4 className="text-lg font-medium text-primary">Arvore VR Immersive Experiences</h4>
+
+            <div className="mt-4 border-l-2 border-primary/20 pl-4">
+              <div className="mb-4">
+                <div className="flex flex-col md:flex-row justify-between mb-1">
+                  <h5 className="font-medium">Senior Game Designer</h5>
+                  <span className="text-muted-foreground text-sm md:text-base">04/2025 - Present</span>
+                </div>
+                <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground text-sm md:text-base">
+                  <li>Defined and clearly communicated the design vision across the team</li>
+                  <li>Led design teams, ensuring alignment with project goals and creative direction</li>
+                  <li>Mentored and supported junior designers, fostering their growth and development</li>
+                  <li>
+                    Identified and solved high-impact design problems to maintain the quality and coherence of the game
+                    experience
+                  </li>
+                  <li>
+                    Contributed to strategic project decisions, influencing priorities, scope, and overall product
+                    direction
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <div className="flex flex-col md:flex-row justify-between mb-1">
+                  <h5 className="font-medium">Game Designer Mid-Level</h5>
+                  <span className="text-muted-foreground text-sm md:text-base">07/2022 - 03/2025</span>
+                </div>
+                <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground text-sm md:text-base">
+                  <li>Designed levels for various games</li>
+                  <li>Developed and documented game mechanics for multiple projects</li>
+                  <li>Collaborated with a multidisciplinary team on RFPs for external clients</li>
+                </ul>
+              </div>
             </div>
-            <h5 className="font-medium text-primary">Senior Game Designer</h5>
-            <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground text-sm md:text-base">
-              <li>Defined and clearly communicated the design vision across the team</li>
-              <li>Led design teams, ensuring alignment with project goals and creative direction</li>
-              <li>Mentored and supported junior designers, fostering their growth and development</li>
-              <li>
-                Identified and solved high-impact design problems to maintain the quality and coherence of the game
-                experience
-              </li>
-              <li>
-                Contributed to strategic project decisions, influencing priorities, scope, and overall product direction
-              </li>
-            </ul>
           </div>
 
-          <div className="mb-6">
-            <div className="flex flex-col md:flex-row justify-between mb-2">
-              <h4 className="font-medium">Arvore VR Immersive Experiences</h4>
-              <span className="text-muted-foreground text-sm md:text-base">07/2022 - 03/2025</span>
-            </div>
-            <h5 className="font-medium text-primary">Game Designer Mid-Level</h5>
-            <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground text-sm md:text-base">
-              <li>Designed levels for various games</li>
-              <li>Developed and documented game mechanics for multiple projects</li>
-              <li>Collaborated with a multidisciplinary team on RFPs for external clients</li>
-            </ul>
-          </div>
+          {/* Kinship Entertainment */}
+          <div className="mb-8">
+            <h4 className="text-lg font-medium text-primary">Kinship Entertainment</h4>
 
-          <div className="mb-6">
-            <div className="flex flex-col md:flex-row justify-between mb-2">
-              <h4 className="font-medium">Kinship Entertainment</h4>
-              <span className="text-muted-foreground text-sm md:text-base">08/2020 - 11/2021</span>
-            </div>
-            <h5 className="font-medium text-primary">Game Designer Associate</h5>
-            <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground text-sm md:text-base">
-              <li>Had more autonomy while developing features</li>
-              <li>Designed and documented new features for the game, such as a clan feature</li>
-              <li>Designed and documented new Systems for the core mechanic of the game</li>
-              <li>Designed new champions to the game, including their entire set of skills and mechanics</li>
-              <li>Worked on balancing the game, following both player feedback and data retrieved from the database</li>
-            </ul>
-          </div>
+            <div className="mt-4 border-l-2 border-primary/20 pl-4">
+              <div className="mb-4">
+                <div className="flex flex-col md:flex-row justify-between mb-1">
+                  <h5 className="font-medium">Game Designer Associate</h5>
+                  <span className="text-muted-foreground text-sm md:text-base">08/2020 - 11/2021</span>
+                </div>
+                <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground text-sm md:text-base">
+                  <li>Had more autonomy while developing features</li>
+                  <li>Designed and documented new features for the game, such as a clan feature</li>
+                  <li>Designed and documented new Systems for the core mechanic of the game</li>
+                  <li>Designed new champions to the game, including their entire set of skills and mechanics</li>
+                  <li>
+                    Worked on balancing the game, following both player feedback and data retrieved from the database
+                  </li>
+                </ul>
+              </div>
 
-          <div className="mb-6">
-            <div className="flex flex-col md:flex-row justify-between mb-2">
-              <h4 className="font-medium">Kinship Entertainment</h4>
-              <span className="text-muted-foreground text-sm md:text-base">06/2020 - 08/2020</span>
+              <div>
+                <div className="flex flex-col md:flex-row justify-between mb-1">
+                  <h5 className="font-medium">Game Designer Intern</h5>
+                  <span className="text-muted-foreground text-sm md:text-base">06/2020 - 08/2020</span>
+                </div>
+                <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground text-sm md:text-base">
+                  <li>Organized all documentation related to the project</li>
+                  <li>Worked close with other Game Designers in the Studio</li>
+                  <li>Had autonomy on minor tasks, such as developing building plans for the AI in the game</li>
+                </ul>
+              </div>
             </div>
-            <h5 className="font-medium text-primary">Game Designer Intern</h5>
-            <ul className="list-disc list-inside mt-2 space-y-1 text-muted-foreground text-sm md:text-base">
-              <li>Organized all documentation related to the project</li>
-              <li>Worked close with other Game Designers in the Studio</li>
-              <li>Had autonomy on minor tasks, such as developing building plans for the AI in the game</li>
-            </ul>
           </div>
         </section>
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { X, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -27,6 +27,22 @@ export default function MediaViewer({
   useEffect(() => {
     setCurrentIndex(initialIndexRef.current)
   }, [isOpen])
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "ArrowRight") {
+      goToNext()
+    } else if (e.key === "ArrowLeft") {
+      goToPrev()
+    } else if (e.key === "Escape") {
+      onClose()
+    }
+  }
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [])
 
   // Verificar se o media existe e tem itens
   if (!media || media.length === 0) {
@@ -57,37 +73,16 @@ export default function MediaViewer({
     }
   }
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") {
-        goToNext()
-      } else if (e.key === "ArrowLeft") {
-        goToPrev()
-      } else if (e.key === "Escape") {
-        onClose()
-      }
-    },
-    [goToNext, goToPrev, onClose],
-  )
-
-  // Handle keyboard navigation
-  useEffect(() => {
-    if (!isOpen) return
-
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [isOpen, handleKeyDown])
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[90vw] max-h-[90vh] p-0 overflow-hidden bg-background/95 backdrop-blur-md">
+      <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 overflow-hidden bg-background/95 backdrop-blur-md border-none">
         <div className="relative w-full h-full flex flex-col">
           {/* Header with title and close button */}
           <div className="flex justify-between items-center p-4 border-b">
             <h3 className="text-lg font-medium">
               {currentMedia.title || `Media ${currentIndex + 1} of ${media.length}`}
             </h3>
-            <Button variant="ghost" size="icon" onClick={onClose}>
+            <Button variant="ghost" size="icon" onClick={onClose} className="z-50">
               <X className="h-5 w-5" />
               <span className="sr-only">Close</span>
             </Button>
@@ -99,21 +94,21 @@ export default function MediaViewer({
               <video
                 src={currentMedia.url}
                 controls
-                className="max-h-[70vh] max-w-full object-contain"
+                className="max-h-[80vh] max-w-full object-contain"
                 autoPlay
                 aria-label={currentMedia.title || `Media ${currentIndex + 1} of ${media.length}`}
               >
                 Your browser does not support the video tag.
               </video>
             ) : (
-              <div className="relative w-full h-full max-h-[70vh] flex items-center justify-center">
+              <div className="relative w-full h-full max-h-[80vh] flex items-center justify-center">
                 <CustomImage
                   src={currentMedia.url || "/placeholder.svg"}
                   alt={currentMedia.title || "Media"}
-                  width={1200}
-                  height={800}
-                  className="max-h-[70vh] max-w-full object-contain"
-                  fallbackSrc="/placeholder.svg?height=600&width=800"
+                  width={1920}
+                  height={1080}
+                  className="max-h-[80vh] max-w-full object-contain"
+                  fallbackSrc="/placeholder.svg?height=1080&width=1920"
                 />
               </div>
             )}

@@ -2,17 +2,10 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-  DrawerClose,
-} from "@/components/ui/drawer"
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Play, X, Maximize, Youtube } from "lucide-react"
+import { ChevronLeft, ChevronRight, Play, X, Maximize, Youtube, ExternalLink } from "lucide-react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import MediaViewer from "./media-viewer"
 import CustomImage from "./custom-image"
@@ -95,6 +88,16 @@ export default function ProjectModal({ project, isOpen, onClose }) {
         : null
   }, [])
 
+  // Função para obter a URL completa do YouTube para abrir em uma nova aba
+  const getYoutubeFullUrl = useCallback(
+    (youtubeUrl) => {
+      const videoId = getYoutubeVideoId(youtubeUrl)
+      if (!videoId) return null
+      return `https://www.youtube.com/watch?v=${videoId}`
+    },
+    [getYoutubeVideoId],
+  )
+
   const renderMediaGallery = () => {
     if (!project) return null
 
@@ -160,21 +163,35 @@ export default function ProjectModal({ project, isOpen, onClose }) {
     return (
       <div className="space-y-4">
         {/* Main media display */}
-        <div className="aspect-video relative bg-muted rounded-md overflow-hidden group">
+        <div className="aspect-video relative bg-muted rounded-md overflow-hidden group h-[250px] md:h-[300px] max-h-[300px]">
           {currentMedia.type === "youtube" ? (
             // YouTube player
             <div className="absolute inset-0">
-              <iframe
-                key={`youtube-${currentMediaIndex}`}
-                src={`https://www.youtube.com/embed/${getYoutubeVideoId(currentMedia.youtubeUrl)}`}
-                title={currentMedia?.title || "YouTube Video"}
-                className="absolute inset-0 w-full h-full"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
+              <div className="relative w-full h-full">
+                <iframe
+                  key={`youtube-${currentMediaIndex}`}
+                  src={`https://www.youtube.com/embed/${getYoutubeVideoId(currentMedia.youtubeUrl)}?enablejsapi=1&rel=0`}
+                  title={currentMedia?.title || "YouTube Video"}
+                  className="absolute inset-0 w-full h-full z-10"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                  allowFullScreen
+                ></iframe>
+
+                {/* Botão para abrir o vídeo em uma nova aba */}
+                <a
+                  href={getYoutubeFullUrl(currentMedia.youtubeUrl)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="absolute top-2 right-2 z-20 bg-background/80 p-2 rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
+                  aria-label="Open video in YouTube"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </div>
+
               {currentMedia?.title && (
-                <div className="absolute bottom-0 left-0 right-0 bg-background/80 p-2 z-10 pointer-events-none">
+                <div className="absolute bottom-0 left-0 right-0 bg-background/80 p-2 z-20 pointer-events-none">
                   <p className="text-sm font-medium">{currentMedia.title}</p>
                 </div>
               )}
@@ -215,7 +232,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                   src={currentMedia?.url || "/placeholder.svg?height=300&width=500"}
                   alt={currentMedia?.title || "Project image"}
                   fill
-                  className="object-contain"
+                  className="object-contain p-2"
                   fallbackSrc="/placeholder.svg?height=300&width=500"
                 />
               </div>
@@ -238,7 +255,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
         </div>
 
         {/* Media navigation */}
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center px-1">
           <Button variant="outline" size="icon" onClick={goToPrev} disabled={currentMediaIndex === 0}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -253,7 +270,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
         </div>
 
         {/* Thumbnails */}
-        <div className="flex gap-2 overflow-x-auto pb-2 snap-x">
+        <div className="flex gap-2 overflow-x-auto pb-2 snap-x px-1">
           {allMedia.map((media, index) => (
             <button
               key={`thumb-${index}`}
@@ -378,15 +395,20 @@ export default function ProjectModal({ project, isOpen, onClose }) {
   if (isMobile) {
     return (
       <>
-        <Drawer open={isOpen} onOpenChange={onClose} shouldScaleBackground={false}>
-          <DrawerContent className="px-4 max-h-[85vh]">
+        <Drawer open={isOpen} onOpenChange={onClose}>
+          <DrawerContent className="px-4 max-h-[90vh]">
             <DrawerHeader className="text-left">
               <DrawerTitle>{project?.title}</DrawerTitle>
               <DrawerDescription>{project?.role}</DrawerDescription>
-              <DrawerClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100 focus:outline-none"
+                onClick={() => onClose()}
+              >
                 <X className="h-4 w-4" />
                 <span className="sr-only">Close</span>
-              </DrawerClose>
+              </Button>
             </DrawerHeader>
 
             <div className="pb-6 overflow-y-auto" onClick={(e) => e.stopPropagation()}>
@@ -422,16 +444,25 @@ export default function ProjectModal({ project, isOpen, onClose }) {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl w-[90vw] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[90vw] w-[90vw] max-h-[90vh] overflow-hidden">
           <DialogHeader>
             <DialogTitle>{project?.title}</DialogTitle>
             <DialogDescription>{project?.role}</DialogDescription>
           </DialogHeader>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-            <div className="space-y-4">{renderMediaGallery()}</div>
+          <div className="flex flex-col md:flex-row mt-4 overflow-hidden">
+            {/* Coluna da esquerda - Mídia */}
+            <div className="flex flex-col md:w-[45%] max-h-[calc(90vh-150px)] pr-0 md:pr-4">
+              <div className="bg-card rounded-md p-4 h-full overflow-hidden">{renderMediaGallery()}</div>
+            </div>
 
-            <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">{renderProjectInfo()}</div>
+            {/* Divisor vertical */}
+            <div className="hidden md:block w-px bg-border h-[calc(90vh-150px)] mx-2"></div>
+
+            {/* Coluna da direita - Informações */}
+            <div className="md:w-[55%] overflow-y-auto pr-2 max-h-[calc(90vh-150px)] pl-0 md:pl-4 mt-4 md:mt-0">
+              <div className="bg-card rounded-md p-4 h-full">{renderProjectInfo()}</div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
