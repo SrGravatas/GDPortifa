@@ -18,12 +18,16 @@ export default function Home() {
       {/* Video Background */}
       <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
         {isClient && (
-          <div className="relative w-full h-full">
+          <div className="relative w-full h-full overflow-hidden">
             <iframe
               src="https://www.youtube.com/embed/7rNbeUnUluw?autoplay=1&mute=1&controls=0&loop=1&playlist=7rNbeUnUluw&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              className="absolute w-[100vw] h-[56.25vw] min-h-[100%] min-w-[177.77vh]"
+              className="absolute w-full h-full object-cover"
               style={{
+                width: "100vw",
+                height: "56.25vw" /* 16:9 Aspect Ratio */,
+                minHeight: "100%",
+                minWidth: "177.77vh" /* 16:9 Aspect Ratio */,
                 position: "absolute",
                 top: "50%",
                 left: "50%",

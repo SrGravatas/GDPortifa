@@ -255,7 +255,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
         </div>
 
         {/* Media navigation */}
-        <div className="flex justify-between items-center px-1">
+        <div className="flex justify-between items-center">
           <Button variant="outline" size="icon" onClick={goToPrev} disabled={currentMediaIndex === 0}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -269,55 +269,57 @@ export default function ProjectModal({ project, isOpen, onClose }) {
           </Button>
         </div>
 
-        {/* Thumbnails */}
-        <div className="flex gap-2 overflow-x-auto pb-2 snap-x px-1">
-          {allMedia.map((media, index) => (
-            <button
-              key={`thumb-${index}`}
-              type="button"
-              className={`flex-shrink-0 w-24 h-16 relative bg-muted rounded-md overflow-hidden cursor-pointer border-2 snap-center ${
-                currentMediaIndex === index ? "border-primary" : "border-transparent"
-              } hover:opacity-90 transition-opacity`}
-              onClick={() => {
-                console.log("Setting current media index to:", index)
-                setCurrentMediaIndex(index)
-              }}
-              aria-label={`View media ${index + 1}`}
-              aria-current={currentMediaIndex === index ? "true" : "false"}
-            >
-              {media.type === "youtube" ? (
-                // YouTube thumbnail
-                <div className="relative w-full h-full">
-                  <CustomImage
-                    src={`https://img.youtube.com/vi/${getYoutubeVideoId(media.youtubeUrl)}/mqdefault.jpg`}
-                    alt={media.title || "YouTube Thumbnail"}
-                    fill
-                    className="object-cover"
-                    fallbackSrc="/placeholder.svg?height=64&width=96"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                    <Youtube className="h-6 w-6 text-white" />
+        {/* Thumbnails - Centralizado */}
+        <div className="flex justify-center">
+          <div className="flex gap-2 overflow-x-auto pb-2 snap-x max-w-full">
+            {allMedia.map((media, index) => (
+              <button
+                key={`thumb-${index}`}
+                type="button"
+                className={`flex-shrink-0 w-24 h-16 relative bg-muted rounded-md overflow-hidden cursor-pointer border-2 snap-center ${
+                  currentMediaIndex === index ? "border-primary" : "border-transparent"
+                } hover:opacity-90 transition-opacity`}
+                onClick={() => {
+                  console.log("Setting current media index to:", index)
+                  setCurrentMediaIndex(index)
+                }}
+                aria-label={`View media ${index + 1}`}
+                aria-current={currentMediaIndex === index ? "true" : "false"}
+              >
+                {media.type === "youtube" ? (
+                  // YouTube thumbnail
+                  <div className="relative w-full h-full">
+                    <CustomImage
+                      src={`https://img.youtube.com/vi/${getYoutubeVideoId(media.youtubeUrl)}/mqdefault.jpg`}
+                      alt={media.title || "YouTube Thumbnail"}
+                      fill
+                      className="object-cover"
+                      fallbackSrc="/placeholder.svg?height=64&width=96"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                      <Youtube className="h-6 w-6 text-white" />
+                    </div>
                   </div>
-                </div>
-              ) : media.url?.endsWith(".mp4") || media.url?.endsWith(".webm") ? (
-                // Video thumbnail
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Play className="h-6 w-6 text-muted-foreground" />
-                </div>
-              ) : (
-                // Image thumbnail
-                <div className="relative w-full h-full">
-                  <CustomImage
-                    src={media.url || "/placeholder.svg"}
-                    alt={media.title || "Thumbnail"}
-                    fill
-                    className="object-cover"
-                    fallbackSrc="/placeholder.svg?height=64&width=96"
-                  />
-                </div>
-              )}
-            </button>
-          ))}
+                ) : media.url?.endsWith(".mp4") || media.url?.endsWith(".webm") ? (
+                  // Video thumbnail
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Play className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                ) : (
+                  // Image thumbnail
+                  <div className="relative w-full h-full">
+                    <CustomImage
+                      src={media.url || "/placeholder.svg"}
+                      alt={media.title || "Thumbnail"}
+                      fill
+                      className="object-cover"
+                      fallbackSrc="/placeholder.svg?height=64&width=96"
+                    />
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     )

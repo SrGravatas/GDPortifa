@@ -19,12 +19,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+    <html lang="en" suppressHydrationWarning className="h-full">
+      <body className={`${inter.className} h-full`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <div className="flex min-h-screen flex-col mx-auto max-w-screen-2xl">
+          <div className="flex min-h-screen flex-col w-full">
             <Navbar />
-            <div className="flex-1">{children}</div>
+            <div className="flex-1 w-full">{children}</div>
             <Footer />
           </div>
         </ThemeProvider>
