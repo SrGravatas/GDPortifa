@@ -20,7 +20,7 @@ export default function Home() {
         {isClient && (
           <div className="relative w-full h-full overflow-hidden">
             <iframe
-              src="https://www.youtube.com/embed/7rNbeUnUluw?autoplay=1&mute=1&controls=0&loop=1&playlist=7rNbeUnUluw&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3"
+              src="https://www.youtube.com/embed/_R0oUPJownQ?autoplay=1&mute=1&controls=0&loop=1&playlist=_R0oUPJownQ&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               className="absolute w-full h-full object-cover"
               style={{

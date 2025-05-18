@@ -217,7 +217,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                 onClick={() => openMediaViewer(currentMediaIndex)}
               >
                 <img
-                  key={`image-${currentMediaIndex}`}
+                  key={`image-${currentMedia?.url}`} // Mudança importante: usar URL como parte da key para forçar re-render
                   src={currentMedia?.url || "/placeholder.svg?height=300&width=500"}
                   alt={currentMedia?.title || "Project image"}
                   className="max-w-full max-h-full object-contain"
@@ -229,7 +229,10 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                   variant="ghost"
                   size="icon"
                   className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/50 hover:bg-background/70"
-                  onClick={() => openMediaViewer(currentMediaIndex)}
+                  onClick={(e) => {
+                    e.stopPropagation() // Impedir propagação do evento
+                    openMediaViewer(currentMediaIndex)
+                  }}
                 >
                   <Maximize className="h-4 w-4" />
                   <span className="sr-only">View fullscreen</span>
@@ -310,6 +313,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                         src={media.url || "/placeholder.svg"}
                         alt={media.title || "Thumbnail"}
                         className="w-full h-full object-cover"
+                        key={`thumb-img-${media.url}`} // Adicionando key única baseada na URL
                         onError={(e) => {
                           e.currentTarget.src = "/placeholder.svg?height=64&width=96"
                         }}
