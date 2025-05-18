@@ -161,9 +161,9 @@ export default function ProjectModal({ project, isOpen, onClose }) {
     }
 
     return (
-      <div className="space-y-4">
-        {/* Main media display */}
-        <div className="aspect-video relative bg-muted rounded-md overflow-hidden group h-[250px] md:h-[300px] max-h-[300px]">
+      <div className="flex flex-col items-center space-y-4 w-full">
+        {/* Main media display - Centralizado */}
+        <div className="aspect-video relative bg-muted rounded-md overflow-hidden group h-[250px] md:h-[300px] max-h-[300px] w-full">
           {currentMedia.type === "youtube" ? (
             // YouTube player
             <div className="absolute inset-0">
@@ -225,8 +225,11 @@ export default function ProjectModal({ project, isOpen, onClose }) {
             </div>
           ) : (
             // Image display
-            <div className="absolute inset-0">
-              <div className="relative w-full h-full cursor-pointer" onClick={() => openMediaViewer(currentMediaIndex)}>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div
+                className="relative w-full h-full cursor-pointer flex items-center justify-center"
+                onClick={() => openMediaViewer(currentMediaIndex)}
+              >
                 <CustomImage
                   key={`image-${currentMediaIndex}`}
                   src={currentMedia?.url || "/placeholder.svg?height=300&width=500"}
@@ -254,8 +257,8 @@ export default function ProjectModal({ project, isOpen, onClose }) {
           )}
         </div>
 
-        {/* Media navigation */}
-        <div className="flex justify-between items-center">
+        {/* Media navigation - Centralizado */}
+        <div className="flex justify-between items-center w-full max-w-[500px]">
           <Button variant="outline" size="icon" onClick={goToPrev} disabled={currentMediaIndex === 0}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -269,9 +272,9 @@ export default function ProjectModal({ project, isOpen, onClose }) {
           </Button>
         </div>
 
-        {/* Thumbnails - Centralizado */}
-        <div className="flex justify-center">
-          <div className="flex gap-2 overflow-x-auto pb-2 snap-x max-w-full">
+        {/* Thumbnails - Centralizado com largura limitada */}
+        <div className="w-full max-w-[500px] overflow-hidden">
+          <div className="flex gap-2 overflow-x-auto pb-2 snap-x justify-center">
             {allMedia.map((media, index) => (
               <button
                 key={`thumb-${index}`}
@@ -455,7 +458,9 @@ export default function ProjectModal({ project, isOpen, onClose }) {
           <div className="flex flex-col md:flex-row mt-4 overflow-hidden">
             {/* Coluna da esquerda - Mídia */}
             <div className="flex flex-col md:w-[45%] max-h-[calc(90vh-150px)] pr-0 md:pr-4">
-              <div className="bg-card rounded-md p-4 h-full overflow-hidden">{renderMediaGallery()}</div>
+              <div className="bg-card rounded-md p-4 h-full overflow-hidden flex items-center justify-center">
+                {renderMediaGallery()}
+              </div>
             </div>
 
             {/* Divisor vertical */}
