@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Play, X, Maximize, Youtube, ExternalLink } from "lucide-react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import MediaViewer from "./media-viewer"
-import CustomImage from "./custom-image"
 
 export default function ProjectModal({ project, isOpen, onClose }) {
   const [isMobile, setIsMobile] = useState(false)
@@ -161,18 +160,18 @@ export default function ProjectModal({ project, isOpen, onClose }) {
     }
 
     return (
-      <div className="flex flex-col items-center space-y-4 w-full">
-        {/* Main media display - Centralizado */}
-        <div className="aspect-video relative bg-muted rounded-md overflow-hidden group h-[250px] md:h-[300px] max-h-[300px] w-full">
-          {currentMedia.type === "youtube" ? (
-            // YouTube player
-            <div className="absolute inset-0">
-              <div className="relative w-full h-full">
+      <div className="flex flex-col items-center w-full h-full">
+        {/* Main media display */}
+        <div className="w-full h-full flex items-center justify-center mb-4">
+          <div className="relative w-full h-full max-h-[calc(100%-80px)] rounded-md overflow-hidden group">
+            {currentMedia.type === "youtube" ? (
+              // YouTube player
+              <div className="w-full h-full">
                 <iframe
                   key={`youtube-${currentMediaIndex}`}
                   src={`https://www.youtube.com/embed/${getYoutubeVideoId(currentMedia.youtubeUrl)}?enablejsapi=1&rel=0`}
                   title={currentMedia?.title || "YouTube Video"}
-                  className="absolute inset-0 w-full h-full z-10"
+                  className="w-full h-full"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                   allowFullScreen
@@ -189,139 +188,137 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                   <ExternalLink className="h-4 w-4" />
                 </a>
               </div>
-
-              {currentMedia?.title && (
-                <div className="absolute bottom-0 left-0 right-0 bg-background/80 p-2 z-20 pointer-events-none">
-                  <p className="text-sm font-medium">{currentMedia.title}</p>
-                </div>
-              )}
-            </div>
-          ) : currentMedia.url?.endsWith(".mp4") || currentMedia.url?.endsWith(".webm") ? (
-            // Video player
-            <div className="absolute inset-0">
-              <video
-                key={`video-${currentMediaIndex}`}
-                src={currentMedia?.url}
-                controls
-                className="w-full h-full object-contain"
-                poster="/placeholder.svg?height=300&width=500"
-              >
-                Seu navegador não suporta a tag de vídeo.
-              </video>
-              {currentMedia?.title && (
-                <div className="absolute bottom-0 left-0 right-0 bg-background/80 p-2 z-10 pointer-events-none">
-                  <p className="text-sm font-medium">{currentMedia.title}</p>
-                </div>
-              )}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/50 hover:bg-background/70"
-                onClick={() => openMediaViewer(currentMediaIndex)}
-              >
-                <Maximize className="h-4 w-4" />
-                <span className="sr-only">View fullscreen</span>
-              </Button>
-            </div>
-          ) : (
-            // Image display
-            <div className="absolute inset-0 flex items-center justify-center">
+            ) : currentMedia.url?.endsWith(".mp4") || currentMedia.url?.endsWith(".webm") ? (
+              // Video player
+              <div className="w-full h-full">
+                <video
+                  key={`video-${currentMediaIndex}`}
+                  src={currentMedia?.url}
+                  controls
+                  className="w-full h-full object-contain"
+                  poster="/placeholder.svg?height=300&width=500"
+                >
+                  Seu navegador não suporta a tag de vídeo.
+                </video>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/50 hover:bg-background/70"
+                  onClick={() => openMediaViewer(currentMediaIndex)}
+                >
+                  <Maximize className="h-4 w-4" />
+                  <span className="sr-only">View fullscreen</span>
+                </Button>
+              </div>
+            ) : (
+              // Image display
               <div
-                className="relative w-full h-full cursor-pointer flex items-center justify-center"
+                className="w-full h-full cursor-pointer flex items-center justify-center"
                 onClick={() => openMediaViewer(currentMediaIndex)}
               >
-                <CustomImage
+                <img
                   key={`image-${currentMediaIndex}`}
                   src={currentMedia?.url || "/placeholder.svg?height=300&width=500"}
                   alt={currentMedia?.title || "Project image"}
-                  fill
-                  className="object-contain p-2"
-                  fallbackSrc="/placeholder.svg?height=300&width=500"
+                  className="max-w-full max-h-full object-contain"
+                  onError={(e) => {
+                    e.currentTarget.src = "/placeholder.svg?height=300&width=500"
+                  }}
                 />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/50 hover:bg-background/70"
+                  onClick={() => openMediaViewer(currentMediaIndex)}
+                >
+                  <Maximize className="h-4 w-4" />
+                  <span className="sr-only">View fullscreen</span>
+                </Button>
               </div>
-              {currentMedia?.title && (
-                <div className="absolute bottom-0 left-0 right-0 bg-background/80 p-2 pointer-events-none">
-                  <p className="text-sm font-medium">{currentMedia.title}</p>
-                </div>
-              )}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/50 hover:bg-background/70"
-                onClick={() => openMediaViewer(currentMediaIndex)}
-              >
-                <Maximize className="h-4 w-4" />
-                <span className="sr-only">View fullscreen</span>
-              </Button>
-            </div>
-          )}
+            )}
+
+            {currentMedia?.title && (
+              <div className="absolute bottom-0 left-0 right-0 bg-background/80 p-2 z-10 pointer-events-none">
+                <p className="text-sm font-medium">{currentMedia.title}</p>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Media navigation - Centralizado */}
-        <div className="flex justify-between items-center w-full max-w-[500px]">
-          <Button variant="outline" size="icon" onClick={goToPrev} disabled={currentMediaIndex === 0}>
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
+        {/* Bottom controls container */}
+        <div className="w-full mt-auto">
+          {/* Media navigation */}
+          <div className="flex justify-between items-center mb-3">
+            <Button variant="outline" size="icon" onClick={goToPrev} disabled={currentMediaIndex === 0}>
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
 
-          <div className="text-sm text-center">
-            {currentMediaIndex + 1} of {allMedia.length}
+            <div className="text-sm text-center">
+              {currentMediaIndex + 1} of {allMedia.length}
+            </div>
+
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={goToNext}
+              disabled={currentMediaIndex === allMedia.length - 1}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
 
-          <Button variant="outline" size="icon" onClick={goToNext} disabled={currentMediaIndex === allMedia.length - 1}>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-
-        {/* Thumbnails - Centralizado com largura limitada */}
-        <div className="w-full max-w-[500px] overflow-hidden">
-          <div className="flex gap-2 overflow-x-auto pb-2 snap-x justify-center">
-            {allMedia.map((media, index) => (
-              <button
-                key={`thumb-${index}`}
-                type="button"
-                className={`flex-shrink-0 w-24 h-16 relative bg-muted rounded-md overflow-hidden cursor-pointer border-2 snap-center ${
-                  currentMediaIndex === index ? "border-primary" : "border-transparent"
-                } hover:opacity-90 transition-opacity`}
-                onClick={() => {
-                  console.log("Setting current media index to:", index)
-                  setCurrentMediaIndex(index)
-                }}
-                aria-label={`View media ${index + 1}`}
-                aria-current={currentMediaIndex === index ? "true" : "false"}
-              >
-                {media.type === "youtube" ? (
-                  // YouTube thumbnail
-                  <div className="relative w-full h-full">
-                    <CustomImage
-                      src={`https://img.youtube.com/vi/${getYoutubeVideoId(media.youtubeUrl)}/mqdefault.jpg`}
-                      alt={media.title || "YouTube Thumbnail"}
-                      fill
-                      className="object-cover"
-                      fallbackSrc="/placeholder.svg?height=64&width=96"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                      <Youtube className="h-6 w-6 text-white" />
+          {/* Thumbnails */}
+          <div className="w-full overflow-x-auto">
+            <div className="flex gap-2 pb-2 snap-x">
+              {allMedia.map((media, index) => (
+                <button
+                  key={`thumb-${index}`}
+                  type="button"
+                  className={`flex-shrink-0 w-20 h-14 relative bg-muted rounded-md overflow-hidden cursor-pointer border-2 snap-center ${
+                    currentMediaIndex === index ? "border-primary" : "border-transparent"
+                  } hover:opacity-90 transition-opacity`}
+                  onClick={() => {
+                    setCurrentMediaIndex(index)
+                  }}
+                  aria-label={`View media ${index + 1}`}
+                  aria-current={currentMediaIndex === index ? "true" : "false"}
+                >
+                  {media.type === "youtube" ? (
+                    // YouTube thumbnail
+                    <div className="relative w-full h-full">
+                      <img
+                        src={`https://img.youtube.com/vi/${getYoutubeVideoId(media.youtubeUrl)}/mqdefault.jpg`}
+                        alt={media.title || "YouTube Thumbnail"}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = "/placeholder.svg?height=64&width=96"
+                        }}
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                        <Youtube className="h-5 w-5 text-white" />
+                      </div>
                     </div>
-                  </div>
-                ) : media.url?.endsWith(".mp4") || media.url?.endsWith(".webm") ? (
-                  // Video thumbnail
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Play className="h-6 w-6 text-muted-foreground" />
-                  </div>
-                ) : (
-                  // Image thumbnail
-                  <div className="relative w-full h-full">
-                    <CustomImage
-                      src={media.url || "/placeholder.svg"}
-                      alt={media.title || "Thumbnail"}
-                      fill
-                      className="object-cover"
-                      fallbackSrc="/placeholder.svg?height=64&width=96"
-                    />
-                  </div>
-                )}
-              </button>
-            ))}
+                  ) : media.url?.endsWith(".mp4") || media.url?.endsWith(".webm") ? (
+                    // Video thumbnail
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Play className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                  ) : (
+                    // Image thumbnail
+                    <div className="relative w-full h-full">
+                      <img
+                        src={media.url || "/placeholder.svg"}
+                        alt={media.title || "Thumbnail"}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = "/placeholder.svg?height=64&width=96"
+                        }}
+                      />
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -457,17 +454,15 @@ export default function ProjectModal({ project, isOpen, onClose }) {
 
           <div className="flex flex-col md:flex-row mt-4 overflow-hidden">
             {/* Coluna da esquerda - Mídia */}
-            <div className="flex flex-col md:w-[45%] max-h-[calc(90vh-150px)] pr-0 md:pr-4">
-              <div className="bg-card rounded-md p-4 h-full overflow-hidden flex items-center justify-center">
-                {renderMediaGallery()}
-              </div>
+            <div className="flex flex-col md:w-[45%] h-[calc(90vh-150px)] pr-0 md:pr-4">
+              <div className="bg-card rounded-md p-4 h-full overflow-hidden">{renderMediaGallery()}</div>
             </div>
 
             {/* Divisor vertical */}
             <div className="hidden md:block w-px bg-border h-[calc(90vh-150px)] mx-2"></div>
 
             {/* Coluna da direita - Informações */}
-            <div className="md:w-[55%] overflow-y-auto pr-2 max-h-[calc(90vh-150px)] pl-0 md:pl-4 mt-4 md:mt-0">
+            <div className="md:w-[55%] overflow-y-auto pr-2 h-[calc(90vh-150px)] pl-0 md:pl-4 mt-4 md:mt-0">
               <div className="bg-card rounded-md p-4 h-full">{renderProjectInfo()}</div>
             </div>
           </div>
