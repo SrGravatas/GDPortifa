@@ -1,15 +1,14 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { X, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import CustomImage from "./custom-image"
 
 export default function MediaViewer({
   isOpen,
   onClose,
-  media = [], // Fornecer um array vazio como fallback
+  media = [],
   initialIndex = 0,
 }: {
   isOpen: boolean
@@ -18,17 +17,16 @@ export default function MediaViewer({
   initialIndex?: number
 }) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex)
-  const initialIndexRef = useRef(initialIndex)
 
+  // Reset index when media changes or dialog opens
   useEffect(() => {
-    initialIndexRef.current = initialIndex
-  }, [initialIndex])
+    if (isOpen) {
+      setCurrentIndex(initialIndex)
+    }
+  }, [initialIndex, isOpen])
 
-  useEffect(() => {
-    setCurrentIndex(initialIndexRef.current)
-  }, [isOpen])
-
-  const handleKeyDown = (e: KeyboardEvent) => {
+  // Handle keyboard navigation
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === "ArrowRight") {
       goToNext()
     } else if (e.key === "ArrowLeft") {
@@ -36,13 +34,12 @@ export default function MediaViewer({
     } else if (e.key === "Escape") {
       onClose()
     }
-  }
+  }, [])
 
-  // Handle keyboard navigation
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [])
+  }, [handleKeyDown])
 
   // Verificar se o media existe e tem itens
   if (!media || media.length === 0) {
@@ -96,19 +93,22 @@ export default function MediaViewer({
                 controls
                 className="max-h-[80vh] max-w-full object-contain"
                 autoPlay
+                preload="metadata"
                 aria-label={currentMedia.title || `Media ${currentIndex + 1} of ${media.length}`}
               >
                 Your browser does not support the video tag.
               </video>
             ) : (
               <div className="relative w-full h-full max-h-[80vh] flex items-center justify-center">
-                <CustomImage
+                <img
                   src={currentMedia.url || "/placeholder.svg"}
                   alt={currentMedia.title || "Media"}
-                  width={1920}
-                  height={1080}
                   className="max-h-[80vh] max-w-full object-contain"
-                  fallbackSrc="/placeholder.svg?height=1080&width=1920"
+                  loading="lazy"
+                  decoding="async"
+                  onError={(e) => {
+                    e.currentTarget.src = "/placeholder.svg?height=1080&width=1920"
+                  }}
                 />
               </div>
             )}

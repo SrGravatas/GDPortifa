@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -9,15 +9,38 @@ import { ChevronLeft, ChevronRight, Play, X, Maximize, Youtube, ExternalLink } f
 import { useMediaQuery } from "@/hooks/use-media-query"
 import MediaViewer from "./media-viewer"
 
+// Função utilitária para extrair ID do YouTube
+const getYoutubeVideoId = (url: string | undefined): string | null => {
+  if (!url) return null
+
+  // Padrão para URLs completas do YouTube
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
+  const match = url.match(regExp)
+
+  // Padrão para URLs de shorts do YouTube
+  const shortsRegExp = /^.*(youtube.com\/shorts\/)([^#&?]*).*/
+  const shortsMatch = url.match(shortsRegExp)
+
+  return match && match[2].length === 11
+    ? match[2]
+    : shortsMatch && shortsMatch[2].length === 11
+      ? shortsMatch[2]
+      : null
+}
+
+// Função utilitária para obter URL completa do YouTube
+const getYoutubeFullUrl = (youtubeUrl: string | undefined): string | null => {
+  const videoId = getYoutubeVideoId(youtubeUrl)
+  if (!videoId) return null
+  return `https://www.youtube.com/watch?v=${videoId}`
+}
+
 export default function ProjectModal({ project, isOpen, onClose }) {
   const [isMobile, setIsMobile] = useState(false)
   const isSmallScreen = useMediaQuery("(max-width: 768px)")
-  const [activeTab, setActiveTab] = useState("info")
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0)
   const [isMediaViewerOpen, setIsMediaViewerOpen] = useState(false)
   const [mediaViewerIndex, setMediaViewerIndex] = useState(0)
-  const [viewerMedia, setViewerMedia] = useState([])
-  const [allMedia, setAllMedia] = useState([])
 
   useEffect(() => {
     setIsMobile(isSmallScreen)
@@ -28,74 +51,75 @@ export default function ProjectModal({ project, isOpen, onClose }) {
     if (isOpen) {
       setCurrentMediaIndex(0)
     }
-  }, [project, isOpen])
+  }, [project?.id, isOpen])
 
-  // Update allMedia and viewerMedia when project changes
-  useEffect(() => {
+  // Processar dados de mídia apenas quando o projeto mudar
+  const { allMedia, viewerMedia } = useMemo(() => {
     if (!project || !project.media) {
-      setAllMedia([])
-      setViewerMedia([])
-      return
+      return { allMedia: [], viewerMedia: [] }
     }
 
     const videos = project.media?.videos || []
     const images = project.media?.images || []
     const youtubeVideos = project.media?.youtubeVideos || []
 
-    // Transformar vídeos do YouTube em um formato compatível com o restante da mídia
+    // Transformar vídeos do YouTube em um formato compatível
     const formattedYoutubeVideos = youtubeVideos.map((video) => ({
       ...video,
       type: "youtube",
       youtubeUrl: video.url,
-      // Usamos uma URL temporária para o thumbnail que será substituída pelo thumbnail real do YouTube
       url: `/placeholder.svg?height=300&width=500`,
     }))
 
-    // Combinar todos os tipos de mídia em uma única lista
+    // Combinar todos os tipos de mídia
     const mediaArray = [...videos, ...formattedYoutubeVideos, ...images]
 
-    setAllMedia(mediaArray)
-
-    // Prepare media array for the MediaViewer component
+    // Preparar array para o MediaViewer
     const mediaForViewer = mediaArray
-      .filter((media) => media.type !== "youtube") // Excluir vídeos do YouTube do visualizador de mídia
+      .filter((media) => media.type !== "youtube")
       .map((media) => ({
         url: media.url || "",
         title: media.title || "",
         type: media.url?.endsWith(".mp4") || media.url?.endsWith(".webm") ? "video" : "image",
       }))
 
-    setViewerMedia(mediaForViewer)
+    return { allMedia: mediaArray, viewerMedia: mediaForViewer }
   }, [project])
 
-  // Função para extrair o ID do vídeo do YouTube a partir da URL
-  const getYoutubeVideoId = useCallback((url) => {
-    if (!url) return null
+  // Função para abrir o visualizador de mídia
+  const openMediaViewer = useCallback(
+    (index) => {
+      // Calcular o índice correto para o visualizador de mídia
+      let viewerIndex = 0
+      let localMediaCount = 0
 
-    // Padrão para URLs completas do YouTube
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
-    const match = url.match(regExp)
+      for (let i = 0; i < allMedia.length; i++) {
+        if (allMedia[i].type !== "youtube") {
+          if (i === index) {
+            viewerIndex = localMediaCount
+          }
+          localMediaCount++
+        }
+      }
 
-    // Padrão para URLs de shorts do YouTube
-    const shortsRegExp = /^.*(youtube.com\/shorts\/)([^#&?]*).*/
-    const shortsMatch = url.match(shortsRegExp)
-
-    return match && match[2].length === 11
-      ? match[2]
-      : shortsMatch && shortsMatch[2].length === 11
-        ? shortsMatch[2]
-        : null
-  }, [])
-
-  // Função para obter a URL completa do YouTube para abrir em uma nova aba
-  const getYoutubeFullUrl = useCallback(
-    (youtubeUrl) => {
-      const videoId = getYoutubeVideoId(youtubeUrl)
-      if (!videoId) return null
-      return `https://www.youtube.com/watch?v=${videoId}`
+      setMediaViewerIndex(viewerIndex)
+      setIsMediaViewerOpen(true)
     },
-    [getYoutubeVideoId],
+    [allMedia],
   )
+
+  // Funções de navegação
+  const goToNext = useCallback(() => {
+    if (currentMediaIndex < allMedia.length - 1) {
+      setCurrentMediaIndex((prev) => prev + 1)
+    }
+  }, [currentMediaIndex, allMedia.length])
+
+  const goToPrev = useCallback(() => {
+    if (currentMediaIndex > 0) {
+      setCurrentMediaIndex((prev) => prev - 1)
+    }
+  }, [currentMediaIndex])
 
   const renderMediaGallery = () => {
     if (!project) return null
@@ -126,39 +150,6 @@ export default function ProjectModal({ project, isOpen, onClose }) {
       )
     }
 
-    // Função para navegar para a próxima mídia
-    const goToNext = () => {
-      if (currentMediaIndex < allMedia.length - 1) {
-        setCurrentMediaIndex(currentMediaIndex + 1)
-      }
-    }
-
-    // Função para navegar para a mídia anterior
-    const goToPrev = () => {
-      if (currentMediaIndex > 0) {
-        setCurrentMediaIndex(currentMediaIndex - 1)
-      }
-    }
-
-    // Função para abrir o visualizador de mídia
-    const openMediaViewer = (index) => {
-      // Calcular o índice correto para o visualizador de mídia, excluindo vídeos do YouTube
-      let viewerIndex = 0
-      let localMediaCount = 0
-
-      for (let i = 0; i < allMedia.length; i++) {
-        if (allMedia[i].type !== "youtube") {
-          if (i === index) {
-            viewerIndex = localMediaCount
-          }
-          localMediaCount++
-        }
-      }
-
-      setMediaViewerIndex(viewerIndex)
-      setIsMediaViewerOpen(true)
-    }
-
     return (
       <div className="flex flex-col items-center w-full h-full">
         {/* Main media display */}
@@ -172,6 +163,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                   src={`https://www.youtube.com/embed/${getYoutubeVideoId(currentMedia.youtubeUrl)}?enablejsapi=1&rel=0`}
                   title={currentMedia?.title || "YouTube Video"}
                   className="w-full h-full"
+                  loading="lazy"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                   allowFullScreen
@@ -197,6 +189,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                   controls
                   className="w-full h-full object-contain"
                   poster="/placeholder.svg?height=300&width=500"
+                  preload="metadata"
                 >
                   Seu navegador não suporta a tag de vídeo.
                 </video>
@@ -217,10 +210,12 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                 onClick={() => openMediaViewer(currentMediaIndex)}
               >
                 <img
-                  key={`image-${currentMedia?.url}`} // Mudança importante: usar URL como parte da key para forçar re-render
+                  key={`image-${currentMedia?.url}`}
                   src={currentMedia?.url || "/placeholder.svg?height=300&width=500"}
                   alt={currentMedia?.title || "Project image"}
                   className="max-w-full max-h-full object-contain"
+                  loading="lazy"
+                  decoding="async"
                   onError={(e) => {
                     e.currentTarget.src = "/placeholder.svg?height=300&width=500"
                   }}
@@ -230,7 +225,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                   size="icon"
                   className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/50 hover:bg-background/70"
                   onClick={(e) => {
-                    e.stopPropagation() // Impedir propagação do evento
+                    e.stopPropagation()
                     openMediaViewer(currentMediaIndex)
                   }}
                 >
@@ -293,6 +288,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                         src={`https://img.youtube.com/vi/${getYoutubeVideoId(media.youtubeUrl)}/mqdefault.jpg`}
                         alt={media.title || "YouTube Thumbnail"}
                         className="w-full h-full object-cover"
+                        loading="lazy"
                         onError={(e) => {
                           e.currentTarget.src = "/placeholder.svg?height=64&width=96"
                         }}
@@ -313,7 +309,8 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                         src={media.url || "/placeholder.svg"}
                         alt={media.title || "Thumbnail"}
                         className="w-full h-full object-cover"
-                        key={`thumb-img-${media.url}`} // Adicionando key única baseada na URL
+                        key={`thumb-img-${media.url}`}
+                        loading="lazy"
                         onError={(e) => {
                           e.currentTarget.src = "/placeholder.svg?height=64&width=96"
                         }}

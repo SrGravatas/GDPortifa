@@ -2,15 +2,35 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 
 export default function Home() {
   const [isClient, setIsClient] = useState(false)
+  const iframeRef = useRef<HTMLIFrameElement>(null)
 
   // Este useEffect garante que o iframe só seja renderizado no lado do cliente
   // para evitar erros de hidratação com o Next.js
   useEffect(() => {
     setIsClient(true)
+
+    // Função para lidar com a visibilidade da página
+    const handleVisibilityChange = () => {
+      if (iframeRef.current) {
+        if (document.hidden) {
+          // Pausar o vídeo quando a página não está visível
+          iframeRef.current.contentWindow?.postMessage('{"event":"command","func":"pauseVideo","args":""}', "*")
+        } else {
+          // Retomar o vídeo quando a página fica visível novamente
+          iframeRef.current.contentWindow?.postMessage('{"event":"command","func":"playVideo","args":""}', "*")
+        }
+      }
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+    }
   }, [])
 
   return (
@@ -20,7 +40,8 @@ export default function Home() {
         {isClient && (
           <div className="relative w-full h-full overflow-hidden">
             <iframe
-              src="https://www.youtube.com/embed/_R0oUPJownQ?autoplay=1&mute=1&controls=0&loop=1&playlist=_R0oUPJownQ&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3"
+              ref={iframeRef}
+              src="https://www.youtube.com/embed/_R0oUPJownQ?autoplay=1&mute=1&controls=0&loop=1&playlist=_R0oUPJownQ&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               className="absolute w-full h-full object-cover"
               style={{
@@ -34,6 +55,7 @@ export default function Home() {
                 transform: "translate(-50%, -50%)",
                 pointerEvents: "none", // Impede interações com o vídeo
               }}
+              loading="lazy"
               frameBorder="0"
             ></iframe>
           </div>

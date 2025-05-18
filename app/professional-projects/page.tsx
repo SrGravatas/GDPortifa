@@ -1,19 +1,21 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback, useMemo } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import ProjectModal from "@/components/project-modal"
 import { projectsData } from "@/lib/projects-data"
-import CustomImage from "@/components/custom-image"
 
 export default function ProfessionalProjects() {
   const [selectedProject, setSelectedProject] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const openProject = (project) => {
+  // Memoize projects data to prevent unnecessary re-renders
+  const projects = useMemo(() => projectsData.professional, [])
+
+  const openProject = useCallback((project) => {
     setSelectedProject(project)
     setIsModalOpen(true)
-  }
+  }, [])
 
   return (
     <div className="container py-8 md:py-12 max-w-screen-2xl mx-auto px-4">
@@ -23,20 +25,22 @@ export default function ProfessionalProjects() {
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-        {projectsData.professional.map((project) => (
+        {projects.map((project) => (
           <Card
             key={project.id}
             className="overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
             onClick={() => openProject(project)}
           >
             <div className="aspect-video relative">
-              <CustomImage
+              <img
                 src={project.thumbnail || "/placeholder.svg?height=300&width=500"}
                 alt={project.title}
-                fill
-                className="object-cover"
-                fallbackSrc="/placeholder.svg?height=300&width=500"
-                priority
+                className="absolute inset-0 w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
+                onError={(e) => {
+                  e.currentTarget.src = "/placeholder.svg?height=300&width=500"
+                }}
               />
             </div>
             <CardContent className="p-4">
