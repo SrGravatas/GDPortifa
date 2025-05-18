@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Play, X, Maximize, Youtube, ExternalLink } from "lucide-react"
@@ -352,6 +352,14 @@ export default function ProjectModal({ project, isOpen, onClose }) {
           )}
         </div>
 
+        {/* Role destacado */}
+        {project.role && (
+          <div className="bg-primary/5 border border-primary/20 rounded-md p-3">
+            <h4 className="font-semibold text-primary">Role</h4>
+            <p className="text-base font-medium mt-1">{project.role}</p>
+          </div>
+        )}
+
         <div>
           <h4 className="font-semibold">About the Project</h4>
           <p className="text-sm text-muted-foreground mt-1 whitespace-pre-line">{project.description}</p>
@@ -405,7 +413,12 @@ export default function ProjectModal({ project, isOpen, onClose }) {
           <DrawerContent className="px-4 max-h-[90vh]">
             <DrawerHeader className="text-left">
               <DrawerTitle>{project?.title}</DrawerTitle>
-              <DrawerDescription>{project?.role}</DrawerDescription>
+              {/* Role destacado para mobile */}
+              {project?.role && (
+                <div className="inline-block px-2 py-1 bg-primary/10 text-primary rounded-md text-sm mt-1">
+                  {project.role}
+                </div>
+              )}
               <Button
                 variant="ghost"
                 size="icon"
@@ -453,7 +466,12 @@ export default function ProjectModal({ project, isOpen, onClose }) {
         <DialogContent className="max-w-[90vw] w-[90vw] max-h-[90vh] overflow-hidden">
           <DialogHeader>
             <DialogTitle>{project?.title}</DialogTitle>
-            <DialogDescription>{project?.role}</DialogDescription>
+            {/* Role destacado para desktop */}
+            {project?.role && (
+              <div className="inline-block px-3 py-1 bg-primary/10 text-primary rounded-md font-medium mt-1">
+                {project.role}
+              </div>
+            )}
           </DialogHeader>
 
           <div className="flex flex-col md:flex-row mt-4 overflow-hidden">
