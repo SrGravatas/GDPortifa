@@ -15,13 +15,13 @@ export const projectsData = {
       generalContribution:
         "As Senior Game Designer, I played a key role in shaping the gameplay foundation of this VR title for PSVR2. My contributions spanned from early prototyping through level design and systems validation, ensuring that the game's core mechanics delivered the immersive, intense experience that The Boys universe demands.",
       technologies: ["Unity 3D", "PSVR2", "Miro", "Google Workspace"],
-      thumbnail: "/images/boys-cover.jpeg",
+      thumbnail: "/images/boys-cover.jpg",
       date: "April 2023 - June 2026",
       media: {
         videos: [],
         images: [
           {
-            url: "/images/boys-cover.jpeg",
+            url: "/images/boys-cover.jpg",
             title: "The Boys Trigger Warning",
           },
         ],
