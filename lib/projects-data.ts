@@ -2,6 +2,39 @@ export const projectsData = {
   professional: [
     {
       id: 1,
+      title: "The Boys Trigger Warning",
+      shortDescription: "Hero action stealth VR game based on The Boys universe",
+      description:
+        "The Boys: Trigger Warning is an action stealth game in virtual reality (VR) based on the irreverent universe of The Boys. You play as an original character who, after discovering the brutal secrets of the Vought corporation, joins the Boys to infiltrate and fight corrupt Supes with intense combat and the signature dark humor of the franchise.",
+      role: "Senior Game Designer",
+      company: "Arvore VR Immersive Experiences",
+      contribution:
+        "My contributions to The Boys Trigger Warning project included:\n\n• Contributed from the early prototyping phase, helping shape the core gameplay vision\n\n• Collaborated closely with engineers to define and validate internal tools\n\n• Created gameplay content using systems still under development\n\n• Rapid iteration on mechanics with focus on technical feasibility and player experience\n\n• Designed immersive VR gameplay experiences with emphasis on presence and physical interaction\n\n• Tuned pacing and feedback loops to maximize immersion and dramatic intensity\n\n• Designed multiple levels with emphasis on action and stealth encounters\n\n• Structured combat scenarios with strong pacing and tension building\n\n• Used spatial design and layout to drive tactical decision-making",
+      learnings:
+        "Through my work on The Boys Trigger Warning, I gained extensive experience in:\n\n• Advanced VR game design principles focused on immersion and presence\n\n• Collaborating with engineering teams during early prototyping phases\n\n• Working with rapidly evolving technical systems and tools\n\n• Designing complex level layouts that balance stealth, action, and exploration\n\n• Iterating quickly on gameplay mechanics while maintaining a strong vision",
+      generalContribution:
+        "As Senior Game Designer, I played a key role in shaping the gameplay foundation of this VR title for PSVR2. My contributions spanned from early prototyping through level design and systems validation, ensuring that the game's core mechanics delivered the immersive, intense experience that The Boys universe demands.",
+      technologies: ["Unity 3D", "PSVR2", "Miro", "Google Workspace"],
+      thumbnail: "/images/boys-cover.jpeg",
+      date: "April 2023 - June 2026",
+      media: {
+        videos: [],
+        images: [
+          {
+            url: "/images/boys-cover.jpeg",
+            title: "The Boys Trigger Warning",
+          },
+        ],
+        youtubeVideos: [
+          {
+            url: "https://www.youtube.com/watch?v=9HHoPjNcIfU",
+            title: "The Boys Trigger Warning Gameplay",
+          },
+        ],
+      },
+    },
+    {
+      id: 2,
       title: "Horizon Worlds Monsters Arena",
       shortDescription: "Hero shooter developed for Meta's Horizon Worlds platform",
       description:
@@ -58,7 +91,7 @@ export const projectsData = {
       },
     },
     {
-      id: 2,
+      id: 3,
       title: "Skydome",
       shortDescription: "Multiplayer Online Tower Defense",
       description:
